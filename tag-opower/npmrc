@@ -1,0 +1,4 @@
+registry=http://npm.opower.it/
+strict-ssl=false
+cache-min=300
+loglevel=warn
