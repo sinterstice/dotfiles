@@ -118,6 +118,9 @@ map <leader>wh              :hide<cr>
 " open last buffer in vertical split
 map <leader>s              :vert belowright sb #<cr>
 
+" close buffer
+map <leader>c              :MBEbd<cr>
+
 " shortcut for closing a buffer without messing up windows
 cnoreabbrev bc MBEbd
 

@@ -1,5 +1,4 @@
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 
 source ~/.private_vars
 source ~/.git-completion.bash
@@ -9,6 +8,7 @@ ulimit -n 65536
 ulimit -u 2048
 
 # Env vars
+export HISTCONTROL=ignoredups
 
 ## Opower
 export workspace="$HOME/opower"
@@ -26,6 +26,7 @@ export PATH="$PATH:/usr/local/jmeter/bin"
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH=$PATH:$HOME/golang/bin
 export PATH=$PATH:$PYTHONPATH
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 
 ## Misc
 export GOPATH=$HOME/golang
@@ -46,6 +47,7 @@ alias bim="vim"
 alias flow="haxelib run flow"
 alias vi="vim"
 alias vibp="vim ~/.bash_profile && source ~/.bash_profile"
+alias curljson="curl -H 'Accept: application/json' -H 'Content-Type: application/json'"
 
 # Git aliases
 alias gcm="git commit"
@@ -110,3 +112,4 @@ function xwtest {
 }
 
 source <(npm completion)
+
