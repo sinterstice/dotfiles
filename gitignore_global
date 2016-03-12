@@ -32,6 +32,7 @@ tmp
 
 # IntelliJ
 .idea/
+*.iml
 
 # Logfiles
 newrelic_agent.log

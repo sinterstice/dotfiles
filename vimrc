@@ -86,31 +86,29 @@ map <leader>t :NERDTreeFocusToggle<CR>
 " focus MBE
 map <leader>f :MBEFocus<CR>
 
-function! WinMove(key) 
-    let t:curwin = winnr()
-    exec "wincmd ".a:key
-    if (t:curwin == winnr()) "we havent moved
-        if (match(a:key,'[jk]')) "were we going up/down
-            wincmd v
-        else 
-            wincmd s
-        endif
-        exec "wincmd ".a:key
-    endif
-endfunction
-
-" move through/open windows
-
-nmap <silent> ˙              :call WinMove('h')<cr>
-nmap <silent> ∆              :call WinMove('k')<cr>
-nmap <silent> ˚              :call WinMove('l')<cr>
-nmap <silent> ¬              :call WinMove('j')<cr>
-
 " close window
 map <leader>wc :wincmd q<cr>
 
 " rotate window
 map <leader>wr <C-W>r
+
+function! WinMove(key) 
+  let t:curwin = winnr()
+  exec "wincmd ".a:key
+  if (t:curwin == winnr()) "we havent moved
+    if (match(a:key,'[jk]')) "were we going up/down
+      wincmd v
+    else 
+      wincmd s
+    endif
+    exec "wincmd ".a:key
+  endif
+endfunction
+ 
+map <leader>h              :call WinMove('h')<cr>
+map <leader>k              :call WinMove('k')<cr>
+map <leader>l              :call WinMove('l')<cr>
+map <leader>j              :call WinMove('j')<cr>
 
 " hide window
 map <leader>wh              :hide<cr>
@@ -123,6 +121,10 @@ map <leader>c              :MBEbd<cr>
 
 " shortcut for closing a buffer without messing up windows
 cnoreabbrev bc MBEbd
+
+" shortcut for turning spellcheck on/off
+cnoreabbrev spellon setlocal spell spelllang=en_us
+cnoreabbrev spelloff setlocal spell spelllang=
 
 cnoreabbrev ea set autoread | checktime | set noautoread 
 

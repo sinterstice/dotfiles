@@ -47,7 +47,9 @@ alias bim="vim"
 alias flow="haxelib run flow"
 alias vi="vim"
 alias vibp="vim ~/.bash_profile && source ~/.bash_profile"
+alias uxwm="npm i -g x-web-maestro"
 alias curljson="curl -H 'Accept: application/json' -H 'Content-Type: application/json'"
+alias op_get_dev_keys="curl http://dev-synapse-1001.va.opower.it:8999/apis/authorization-v1/oauth2/token -XPOST -H 'Authorization: Basic MDZmNmZiMzgtYTVjMS00NDIxLWFhOTYtNzhlNGJhMDUwYWQ2OmYzYTNhMzlkLWJkZDQtNDA0YS1iYWE0LWI2Y2MxYzNmOTlkMA==' -d 'grant_type=client_credentials'"
 
 # Git aliases
 alias gcm="git commit"
@@ -68,7 +70,7 @@ alias grm="git rm"
 __git_complete grm _git_rm
 alias grb="git rebase"
 __git_complete grb _git_rebase
-alias glg="git log"
+alias glg="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 __git_complete glg _git_log
 alias grs="git reset"
 __git_complete glg _git_log
@@ -93,6 +95,10 @@ function gpucb {
   git push dj-madeira $CURR_BRANCH
 }
 
+function gfpr {
+  git fetch origin pull/$1/head:$2
+}
+
 function docker-up {
   docker-machine start default
   eval $(docker-machine env default)
@@ -108,7 +114,7 @@ function mkcd {
 }
 
 function xwtest {
-  test__unit=$1 test__browser=$2 test__retry=$3 npm test
+  test__skipStaticAnalysis=true test__retry=false test__unit=$1 test__browser=$2 npm test
 }
 
 source <(npm completion)
