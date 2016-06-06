@@ -12,11 +12,13 @@ export HISTCONTROL=ignoredups
 
 ## Opower
 export workspace="$HOME/opower"
+export workspace_client=$workspace/client
 export GITHUB_HOST=github.va.opower.it
 export POSE_USER=dj.madeira
 export newrelic__enable=false 
 export server__https=8082
 export GIT_USER=dj.madeira
+export DOCKER_BASH_SKIP_ENV_CHECK=true
 
 ## Path mods
 export PATH="/usr/local/mysql/bin:$PATH"
@@ -42,7 +44,7 @@ source $(brew --prefix nvm)/nvm.sh
 
 # Aliases
 alias mci="mvn clean install"
-alias mcist="mvn -Dmaven.test.skip.exec=true clean install"
+alias mcist="mvn -Dpmd.skip=true -Dmaven.test.skip.exec=true -DskipTests=true -Dcheckstyle.skip=true clean install"
 alias bim="vim"
 alias flow="haxelib run flow"
 alias vi="vim"
@@ -96,7 +98,10 @@ function gpucb {
 }
 
 function gfpr {
+  git_get_current_branch
+  git checkout master
   git fetch origin pull/$1/head:$2
+  git checkout $CURR_BRANCH
 }
 
 function docker-up {
@@ -114,8 +119,55 @@ function mkcd {
 }
 
 function xwtest {
-  test__skipStaticAnalysis=true test__retry=false test__unit=$1 test__browser=$2 npm test
+  test__skipStaticAnalysis=true test__retry=false test__files=$1 npm test
 }
 
-source <(npm completion)
+function hello_it {
+    rm -rf ./node_modules ./build ./dist ~/.x-web-maestro
+    npm cache clean
+    npm i
+    #npm i -g x-web-maestro x-web-get-client-theme
+}
 
+function dbro_docker_port {
+    bind_port compose_synapselite_1 8998
+    bind_port compose_mock_1 3000
+    bind_port compose_astro_1 8080
+    bind_port compose_dbro_1 5555
+}
+
+function squashbump {
+    if [ -z $1 ]; then 
+        return;
+    fi
+    git rebase -i $1
+
+    # Scary
+    while [ $(git status | grep "interactive rebase in progress;" -c) == "1" ]; do
+        awk '\
+        BEGIN { print_next_line=1 } \
+        $1 ~ /<<<<<<</ { print_next_line=0; next } \
+        $1 ~ /=======/ { print_next_line=0; next } \
+        $1 ~ />>>>>>>/ { next } \
+        $1 == "\"version\":" { if ( matched_version != 1 ) { sub("-0", ""); print $0; matched_version=1 } } \
+        { if (print_next_line) print; else print_next_line=1 } \
+        ' package.json > tmp_package.json
+        mv tmp_package.json package.json
+        git add package.json
+        git rebase --continue
+    done
+}
+
+function jenkunfinished {
+    for TESTNAME in $(awk -F'"' '/"test\/browser\/[a-z0-9-]+\.js"/ { print $2 }' $1); do
+        if (( $(grep -c $TESTNAME $1) < 5 )); then
+            echo $TESTNAME;
+        fi;
+    done
+}
+
+#eval $(docker-machine env dev)
+source <(npm completion)
+source ~/techops.bash/techops.bash
+source ~/opower/docker.bash/docker.bash
+source ~/opower/docker.bash/docker-tunnel.bash 

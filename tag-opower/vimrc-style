@@ -9,7 +9,7 @@ set cindent
 
 "Format options"
 set formatoptions=tcqn1
-colorscheme wells-colors
+colorscheme wellsokai
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:indentLine_color_term = 239
 set guifont=Hack
