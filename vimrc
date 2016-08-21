@@ -45,6 +45,9 @@ NeoBundle 'vim-scripts/SearchComplete'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'jdonaldson/vaxe'
 NeoBundle 'fholgado/minibufexpl.vim'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'tpope/vim-repeat'
+NeoBundle 'tpope/vim-commentary'
 if v:version > 703
     NeoBundle 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --clang-completer --system-libclang --omnisharp-completer', } }
 endif
@@ -63,9 +66,14 @@ NeoBundleCheck
 set showcmd
 set dictionary=/usr/share/dict/words
 syntax on
+set relativenumber 
 set number
 set mouse=a
 set backspace=indent,eol,start
+
+" highlight columns longer than 120 characters
+highlight ColorColumn ctermbg=magenta guibg=magenta
+call matchadd('ColorColumn', '\%121v', 100)
 
 " File options
 "set wildignore=.DS_Store
@@ -168,9 +176,6 @@ CommandCabbr ccab CommandCabbr
 " Search alias for ack.vim
 CommandCabbr ag Ack 
 
-" hide Syntastic windows
-" map <leader>r :SyntasticReset<cr>
-
 "Allows Vim to automatically create directories to save a file
 function! s:MkNonExDir(file, buf)
     if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
@@ -190,5 +195,21 @@ let g:nerdtree_tabs_open_on_console_startup = 1
 
 "Airline settings
 let g:airline_powerline_fonts = 1
+
+"YCM settings
+set completeopt-=preview
+let g:ycm_add_preview_to_completeopt = 0
+
+"ctrlp settings
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  let g:ctrlp_use_caching = 0
+endif
+let g:ctrlp_working_path_mode = 0
 
 so ~/.vimrc-style

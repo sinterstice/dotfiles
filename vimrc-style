@@ -3,6 +3,7 @@ filetype indent on
 set autoindent
 set smartindent
 set cindent
+set shiftwidth=4
 
 "Format options"
 set formatoptions=tcqn1
