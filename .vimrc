@@ -212,4 +212,17 @@ if executable('ag')
 endif
 let g:ctrlp_working_path_mode = 0
 
-so ~/.vimrc-style
+"Indent options"
+filetype indent on
+set autoindent
+set smartindent
+set cindent
+set shiftwidth=4
+
+"Format options"
+set formatoptions=tcqn1
+colorscheme wellsokai
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+let g:indentLine_color_term = 239
+set guifont=Hack
+
