@@ -35,7 +35,6 @@ NeoBundle 'wting/rust.vim'
 NeoBundle 'mileszs/ack.vim'
 NeoBundle 'evidens/vim-twig'
 NeoBundle 'LucHermitte/lh-vim-lib'
-NeoBundle 'LucHermitte/local_vimrc'
 NeoBundle 'fatih/vim-go'
 NeoBundle 'vim-scripts/nextval'
 NeoBundle 'jistr/vim-nerdtree-tabs'
@@ -225,4 +224,3 @@ colorscheme wellsokai
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 let g:indentLine_color_term = 239
 set guifont=Hack
-
