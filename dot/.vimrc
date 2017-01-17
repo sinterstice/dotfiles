@@ -48,7 +48,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-commentary'
 if v:version > 703
-    NeoBundle 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --clang-completer --system-libclang --omnisharp-completer', } }
+    NeoBundle 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
 endif
 call neobundle#end()
 
@@ -153,6 +153,8 @@ map <leader>b :b#<cr>
 " switch to next buffer
 map <tab> :bn<cr>
 map <S-tab> :bp<cr>
+
+set clipboard=unnamed
 
 " yank to system clipboard
 map <leader>y "*y
