@@ -220,6 +220,10 @@ set smartindent
 set cindent
 set shiftwidth=4
 
+"tab settings"
+set noexpandtab
+set tabstop=4
+
 "Format options"
 set formatoptions=tcqn1
 colorscheme wellsokai

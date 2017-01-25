@@ -73,8 +73,14 @@ function gplom {
 }
 
 function gpucb {
+  if [ -z $1 ]
+  then
+	  REMOTE="origin"
+  else 
+	  REMOTE=$1
+  fi
   git_get_current_branch
-  git push dj-madeira $CURR_BRANCH
+  git push $REMOTE $CURR_BRANCH
 }
 
 function gfpr {

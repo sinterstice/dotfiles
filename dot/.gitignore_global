@@ -38,5 +38,7 @@ tmp
 newrelic_agent.log
 
 # Other TMP files
+*~
 *.swp
+*.swo
 *.log
