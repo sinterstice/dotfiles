@@ -1,10 +1,8 @@
-# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
 source ~/.private_vars
 source ~/.git-completion.bash
 
 # Env vars
-export HISTCONTROL=ignoredups
+export HISTCONTROL=ignoredups # When going through command history, ignore the same command run multiple times in a row
 
 ## Path mods
 export PATH="/usr/local/mysql/bin:$PATH"
@@ -21,10 +19,10 @@ export GOPATH=$HOME/golang
 export GOROOT=/usr/local/opt/go/libexec
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages
 export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
 
 # Powerline
 . $PYTHONPATH/powerline/bindings/bash/powerline.sh
+export XDG_CONFIG_HOME=~/.config
 
 # Aliases
 alias mci="mvn clean install"
@@ -84,10 +82,10 @@ function gpucb {
 }
 
 function gfpr {
-  git_get_current_branch
+  set -e
   git checkout master
   git fetch origin pull/$1/head:$2
-  git checkout $CURR_BRANCH
+  git checkout $2
 }
 
 # Job control aliases
@@ -99,4 +97,10 @@ function mkcd {
   cd $1
 }
 
+function ptouch {
+	mkdir -p `dirname $1`
+	touch $1
+}
+
+source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
