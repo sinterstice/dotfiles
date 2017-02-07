@@ -19,6 +19,7 @@ export GOPATH=$HOME/golang
 export GOROOT=/usr/local/opt/go/libexec
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages
 export NVM_DIR=~/.nvm
+export EDITOR=vim
 
 # Powerline
 . $PYTHONPATH/powerline/bindings/bash/powerline.sh
@@ -28,7 +29,6 @@ export XDG_CONFIG_HOME=~/.config
 alias mci="mvn clean install"
 alias mcist="mvn -Dpmd.skip=true -Dmaven.test.skip.exec=true -DskipTests=true -Dcheckstyle.skip=true clean install"
 alias bim="vim"
-alias vi="vim"
 alias vibp="vim ~/.bash_profile && source ~/.bash_profile"
 
 # Git aliases
@@ -104,3 +104,4 @@ function ptouch {
 
 source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
+[[ -r ~/.bashrc ]] && . ~/.bashrc

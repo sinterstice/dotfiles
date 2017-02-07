@@ -23,27 +23,30 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 " Refer to |:NeoBundle-examples|.
+" Statusline
 NeoBundle 'bling/vim-airline'
-NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'waylan/vim-markdown-extra-preview'
-NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'tpope/vim-fugitive'
+" Search
+NeoBundle 'vim-scripts/SearchComplete'
 NeoBundle 'ctrlpvim/ctrlp.vim'
+" File browsing
+NeoBundle 'mileszs/ack.vim'
+NeoBundle 'jistr/vim-nerdtree-tabs'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'vim-scripts/a.vim' " Open header file for current file, vice versa
+NeoBundle 'fholgado/minibufexpl.vim'
+" Colors & fonts
 NeoBundle 'flazz/vim-colorschemes'
 NeoBundle 'wellsjo/wells-colorscheme.vim'
+" Lang support
 NeoBundle 'wting/rust.vim'
-NeoBundle 'mileszs/ack.vim'
-NeoBundle 'evidens/vim-twig'
-NeoBundle 'LucHermitte/lh-vim-lib'
-NeoBundle 'fatih/vim-go'
-NeoBundle 'vim-scripts/nextval'
-NeoBundle 'jistr/vim-nerdtree-tabs'
 NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'vim-scripts/a.vim'
-NeoBundle 'vim-scripts/SearchComplete'
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'jdonaldson/vaxe'
-NeoBundle 'fholgado/minibufexpl.vim'
+NeoBundle 'cakebaker/scss-syntax.vim'
+NeoBundle 'fatih/vim-go'
+" VimL functions
+NeoBundle 'LucHermitte/lh-vim-lib'
+NeoBundle 'vim-scripts/nextval'
+" Enhancements for edit, insert etc
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-commentary'
@@ -67,7 +70,8 @@ set dictionary=/usr/share/dict/words
 syntax on
 set relativenumber 
 set number
-set mouse=a
+set mouse+=a
+set ttymouse=xterm2
 set backspace=indent,eol,start
 
 " highlight columns longer than 120 characters
@@ -90,8 +94,8 @@ let mapleader = ","
 " focus nerdtree
 map <leader>t :NERDTreeFocusToggle<CR>
 
-" focus MBE
-map <leader>f :MBEFocus<CR>
+" Find the current file in NERDTree
+map <leader>f :NERDTreeFind<cr>
 
 " close window
 map <leader>wc :wincmd q<cr>
@@ -117,6 +121,8 @@ map <leader>k              :call WinMove('k')<cr>
 map <leader>l              :call WinMove('l')<cr>
 map <leader>j              :call WinMove('j')<cr>
 
+map <C-w>J	:vertical resize -5<cr>
+
 " hide window
 map <leader>wh              :hide<cr>
 
@@ -125,6 +131,9 @@ map <leader>s              :vert belowright sb #<cr>
 
 " close buffer
 map <leader>c              :MBEbd<cr>
+
+" reload vim config
+map <leader>r :so ~/.vimrc<cr>
 
 " shortcut for closing a buffer without messing up windows
 cnoreabbrev bc MBEbd
@@ -193,6 +202,7 @@ augroup END
 
 "NERDTree settings
 let g:nerdtree_tabs_open_on_console_startup = 1
+let g:nerdtree_tabs_smart_startup_focus = 2
 
 "Airline settings
 let g:airline_powerline_fonts = 1
@@ -213,6 +223,21 @@ if executable('ag')
 endif
 let g:ctrlp_working_path_mode = 0
 
+function! CtrlPCommand()
+	let c = 0
+	let wincount = winnr('$')
+	" Don't open it here if current buffer is not writable (e.g. NERDTree)
+	while !empty(getbufvar(+expand("<abuf>"), "&buftype")) && c < wincount
+		exec 'wincmd w'
+		let c = c + 1
+	endwhile
+	exec 'CtrlP'
+endfunction
+let g:ctrlp_cmd = 'call CtrlPCommand()'
+
+"Fix for crontab: temp file must be edited in place
+autocmd filetype crontab setlocal nobackup nowritebackup
+
 "Indent options"
 filetype indent on
 set autoindent
@@ -228,5 +253,6 @@ set tabstop=4
 set formatoptions=tcqn1
 colorscheme wellsokai
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+autocmd BufNewFile,BufReadPost *.pcss set filetype=scss
 let g:indentLine_color_term = 239
 set guifont=Hack

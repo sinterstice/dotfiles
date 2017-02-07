@@ -27,6 +27,7 @@ Temporary Items
 target/
 
 # Node
+.nvmrc
 node_modules
 tmp
 
