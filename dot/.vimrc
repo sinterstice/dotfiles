@@ -234,6 +234,7 @@ function! CtrlPCommand()
 	exec 'CtrlP'
 endfunction
 let g:ctrlp_cmd = 'call CtrlPCommand()'
+let g:ctrlp_lazy_update = 1
 
 "Fix for crontab: temp file must be edited in place
 autocmd filetype crontab setlocal nobackup nowritebackup
