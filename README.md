@@ -1,2 +1,2 @@
 # dotfiles
-I use [rcm](https://github.com/thoughtbot/rcm) to manage these dotfiles.
+I use [stow](https://www.gnu.org/software/stow/) to manage these dotfiles.
