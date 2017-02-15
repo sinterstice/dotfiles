@@ -1,68 +1,48 @@
-"NeoBundle Scripts-----------------------------
-" Note: Skip initialization for vim-tiny or vim-small.
-if 0 | endif
+set nocompatible
 
-if has('vim_starting')
-  if &compatible
-    set nocompatible               " Be iMproved
-  endif
+" Vundle options
+filetype off                  " required
 
-  " Required:
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
-endif
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
 
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
-
-" Required:
-call neobundle#begin(expand('~/.vim/bundle/'))
-
-" Let NeoBundle manage NeoBundle
-" Required:
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-" Refer to |:NeoBundle-examples|.
-" Statusline
-NeoBundle 'bling/vim-airline'
-NeoBundle 'tpope/vim-fugitive'
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'bling/vim-airline'
+Plugin 'tpope/vim-fugitive'
 " Search
-NeoBundle 'vim-scripts/SearchComplete'
-NeoBundle 'ctrlpvim/ctrlp.vim'
+Plugin 'vim-scripts/SearchComplete'
+Plugin 'ctrlpvim/ctrlp.vim'
 " File browsing
-NeoBundle 'mileszs/ack.vim'
-NeoBundle 'jistr/vim-nerdtree-tabs'
-NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'vim-scripts/a.vim' " Open header file for current file, vice versa
-NeoBundle 'fholgado/minibufexpl.vim'
+Plugin 'mileszs/ack.vim'
+Plugin 'tpope/vim-dispatch'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'scrooloose/nerdtree'
+Plugin 'vim-scripts/a.vim' " Open header file for current file, vice versa
+Plugin 'fholgado/minibufexpl.vim'
 " Colors & fonts
-NeoBundle 'flazz/vim-colorschemes'
-NeoBundle 'wellsjo/wells-colorscheme.vim'
+Plugin 'flazz/vim-colorschemes'
+Plugin 'wellsjo/wells-colorscheme.vim'
 " Lang support
-NeoBundle 'wting/rust.vim'
-NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'cakebaker/scss-syntax.vim'
-NeoBundle 'fatih/vim-go'
+Plugin 'sheerun/vim-polyglot'
 " VimL functions
-NeoBundle 'LucHermitte/lh-vim-lib'
-NeoBundle 'vim-scripts/nextval'
+Plugin 'LucHermitte/lh-vim-lib'
+Plugin 'vim-scripts/nextval'
 " Enhancements for edit, insert etc
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'tpope/vim-repeat'
-NeoBundle 'tpope/vim-commentary'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+Plugin 'tpope/vim-commentary'
 if v:version > 703
-    NeoBundle 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
+    Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
 endif
-call neobundle#end()
 
-" Required:
-filetype plugin indent on
-
-" If there are uninstalled bundles found on startup,
-" this will conveniently prompt you to install them.
-NeoBundleCheck
-
-"End NeoBundle Scripts-------------------------
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required" Statusline
+" End Vundle options
 
 "General options"
 set showcmd
@@ -97,9 +77,6 @@ map <leader>t :NERDTreeFocusToggle<CR>
 " Find the current file in NERDTree
 map <leader>f :NERDTreeFind<cr>
 
-" close window
-map <leader>wc :wincmd q<cr>
-
 " rotate window
 map <leader>wr <C-W>r
 
@@ -121,28 +98,26 @@ map <leader>k              :call WinMove('k')<cr>
 map <leader>l              :call WinMove('l')<cr>
 map <leader>j              :call WinMove('j')<cr>
 
-map <C-w>J	:vertical resize -5<cr>
-
-" hide window
-map <leader>wh              :hide<cr>
+" open last buffer in vertical split
+map <leader>sv              :vert belowright sb #<cr>
 
 " open last buffer in vertical split
-map <leader>s              :vert belowright sb #<cr>
+map <leader>sh              :belowright sb #<cr>
 
 " close buffer
 map <leader>c              :MBEbd<cr>
 
+cnoreabbrev bc<cr> MBEbd<cr>
+
+" Generate ctags
+cnoreabbrev ctags !ctags -R --exclude=node_modules --fields=+l .
+
 " reload vim config
 map <leader>r :so ~/.vimrc<cr>
-
-" shortcut for closing a buffer without messing up windows
-cnoreabbrev bc MBEbd
 
 " shortcut for turning spellcheck on/off
 cnoreabbrev spellon setlocal spell spelllang=en_us
 cnoreabbrev spelloff setlocal spell spelllang=
-
-cnoreabbrev ea set autoread | checktime | set noautoread 
 
 " closes all buffers except the current buffer
 function! CloseAllBuffers()
@@ -163,16 +138,18 @@ map <leader>b :b#<cr>
 map <tab> :bn<cr>
 map <S-tab> :bp<cr>
 
-set clipboard=unnamed
-
-" yank to system clipboard
-map <leader>y "*y
-
-" Put from system clipboard
-map <leader>p "*p
+" Replace text without overwriting the most recent buffer
+vmap r "_dP
 
 " Insert a newline
-map <leader>o i<cr><C-[>
+nmap <leader>o o<Esc>k
+nmap <leader>O O<Esc>j
+
+" Use system clipboard
+map <leader>y "*y
+map <leader>p "*p
+
+imap ii <Esc>
 
 "Aliases"
 " function to define aliases (from http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev)
@@ -183,8 +160,6 @@ command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 CommandCabbr ccab CommandCabbr
 
-" Search alias for ack.vim
-CommandCabbr ag Ack 
 
 "Allows Vim to automatically create directories to save a file
 function! s:MkNonExDir(file, buf)
@@ -210,6 +185,18 @@ let g:airline_powerline_fonts = 1
 "YCM settings
 set completeopt-=preview
 let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_collect_identifiers_from_tags_files = 1
+
+"Ack.vim settings
+map <leader>a :ag 
+CommandCabbr ag Ack 
+let g:ack_use_dispatch = 1
+let g:ack_use_cword_for_empty_search = 1
+
+" Use ag
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 "ctrlp settings
 if executable('ag')
@@ -238,6 +225,9 @@ let g:ctrlp_lazy_update = 1
 
 "Fix for crontab: temp file must be edited in place
 autocmd filetype crontab setlocal nobackup nowritebackup
+
+" JSX enabled in all JS files
+let g:jsx_ext_required = 0
 
 "Indent options"
 filetype indent on

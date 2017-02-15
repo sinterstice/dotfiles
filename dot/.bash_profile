@@ -102,6 +102,11 @@ function ptouch {
 	touch $1
 }
 
+# Fix output issues
+function st {
+	stty sane
+}
+
 source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
 [[ -r ~/.bashrc ]] && . ~/.bashrc

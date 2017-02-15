@@ -43,3 +43,5 @@ newrelic_agent.log
 *.swp
 *.swo
 *.log
+
+tags
