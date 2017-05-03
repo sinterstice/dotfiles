@@ -35,6 +35,9 @@ tmp
 .idea/
 *.iml
 
+# Misc
+.agignore
+
 # Logfiles
 newrelic_agent.log
 

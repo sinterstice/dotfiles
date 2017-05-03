@@ -15,19 +15,21 @@ Plugin 'bling/vim-airline'
 Plugin 'tpope/vim-fugitive'
 " Search
 Plugin 'vim-scripts/SearchComplete'
-Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " File browsing
 Plugin 'mileszs/ack.vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'scrooloose/nerdtree'
 Plugin 'vim-scripts/a.vim' " Open header file for current file, vice versa
-Plugin 'fholgado/minibufexpl.vim'
+Plugin 'djmadeira/minibufexpl.vim'
 " Colors & fonts
 Plugin 'flazz/vim-colorschemes'
 Plugin 'wellsjo/wells-colorscheme.vim'
 " Lang support
+Plugin 'vim-syntastic/syntastic'
 Plugin 'sheerun/vim-polyglot'
+Plugin 'editorconfig/editorconfig-vim'
 " VimL functions
 Plugin 'LucHermitte/lh-vim-lib'
 Plugin 'vim-scripts/nextval'
@@ -36,7 +38,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-commentary'
 if v:version > 703
-    Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
+	Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
 endif
 
 " All of your Plugins must be added before the following line
@@ -44,11 +46,11 @@ call vundle#end()            " required
 filetype plugin indent on    " required" Statusline
 " End Vundle options
 
-"General options"
+"General options
 set showcmd
 set dictionary=/usr/share/dict/words
 syntax on
-set relativenumber 
+set relativenumber
 set number
 set mouse+=a
 set ttymouse=xterm2
@@ -58,11 +60,16 @@ set backspace=indent,eol,start
 highlight ColorColumn ctermbg=magenta guibg=magenta
 call matchadd('ColorColumn', '\%121v', 100)
 
+" Fold options
+set foldmethod=syntax
+autocmd Syntax * normal zR
+
 " File options
 "set wildignore=.DS_Store
 set hidden
+set autoread
 
-"Search options"
+"Search options
 set ignorecase
 set smartcase
 set hlsearch
@@ -80,19 +87,21 @@ map <leader>f :NERDTreeFind<cr>
 " rotate window
 map <leader>wr <C-W>r
 
-function! WinMove(key) 
-  let t:curwin = winnr()
-  exec "wincmd ".a:key
-  if (t:curwin == winnr()) "we havent moved
-    if (match(a:key,'[jk]')) "were we going up/down
-      wincmd v
-    else 
-      wincmd s
-    endif
-    exec "wincmd ".a:key
-  endif
+map <leader>lh c(...v) => { console.log(v); return <Esc>pa; }<Esc>
+
+function! WinMove(key)
+	let t:curwin = winnr()
+	exec "wincmd ".a:key
+	if (t:curwin == winnr()) "we havent moved
+		if (match(a:key,'[jk]')) "were we going up/down
+			wincmd v
+		else
+			wincmd s
+		endif
+		exec "wincmd ".a:key
+	endif
 endfunction
- 
+
 map <leader>h              :call WinMove('h')<cr>
 map <leader>k              :call WinMove('k')<cr>
 map <leader>l              :call WinMove('l')<cr>
@@ -121,13 +130,13 @@ cnoreabbrev spelloff setlocal spell spelllang=
 
 " closes all buffers except the current buffer
 function! CloseAllBuffers()
-    let all_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-    let current_buffer = bufnr('%')
-    for i in all_buffers
-        if i != current_buffer
-            execute 'bd ' . i
-        endif
-    endfor
+	let all_buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+	let current_buffer = bufnr('%')
+	for i in all_buffers
+		if i != current_buffer
+			execute 'bd ' . i
+		endif
+	endfor
 endfunction
 cnoreabbrev bda call CloseAllBuffers()
 
@@ -145,35 +154,58 @@ vmap r "_dP
 nmap <leader>o o<Esc>k
 nmap <leader>O O<Esc>j
 
+" Insert a newline at the current position
+nmap <Enter> i<Enter><Esc>
+
 " Use system clipboard
 map <leader>y "*y
 map <leader>p "*p
 
-imap ii <Esc>
+imap jk <Esc>
 
 "Aliases"
 " function to define aliases (from http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev)
 function! CommandCabbr(abbreviation, expansion)
-  execute 'cabbr ' . a:abbreviation . ' <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "' . a:expansion . '" : "' . a:abbreviation . '"<CR>'
+	execute 'cabbr ' . a:abbreviation . ' <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "' . a:expansion . '" : "' . a:abbreviation . '"<CR>'
 endfunction
 command! -nargs=+ CommandCabbr call CommandCabbr(<f-args>)
 " Use it on itself to define a simpler abbreviation for itself.
 CommandCabbr ccab CommandCabbr
 
-
 "Allows Vim to automatically create directories to save a file
 function! s:MkNonExDir(file, buf)
-    if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
-        let dir=fnamemodify(a:file, ':h')
-        if !isdirectory(dir)
-            call mkdir(dir, 'p')
-        endif
-    endif
+	if empty(getbufvar(a:buf, '&buftype')) && a:file!~#'\v^\w+\:\/'
+		let dir=fnamemodify(a:file, ':h')
+		if !isdirectory(dir)
+			call mkdir(dir, 'p')
+		endif
+	endif
 endfunction
 augroup BWCCreateDir
-    autocmd!
-    autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
+	autocmd!
+	autocmd BufWritePre * :call s:MkNonExDir(expand('<afile>'), +expand('<abuf>'))
 augroup END
+
+function! StrTrim(txt)
+	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
+endfunction
+
+"MBE settings
+let g:miniBufExplMaxSize=3
+let g:miniBufExplUseSingleClick = 1
+let g:miniBufExplSortBy='number'
+
+"Syntastic settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
 
 "NERDTree settings
 let g:nerdtree_tabs_open_on_console_startup = 1
@@ -188,28 +220,30 @@ let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_collect_identifiers_from_tags_files = 1
 
 "Ack.vim settings
-map <leader>a :ag 
-CommandCabbr ag Ack 
-let g:ack_use_dispatch = 1
+map <leader>a :ag
+CommandCabbr ag Ack
+"let g:ack_use_dispatch = 1
 let g:ack_use_cword_for_empty_search = 1
+let g:ack_default_options = ''
 
 " Use ag
 if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
+	let g:ackprg = 'ag --vimgrep -S'
 endif
 
 "ctrlp settings
 if executable('ag')
-  " Use Ag over Grep
-  set grepprg=ag\ --nogroup\ --nocolor
+	" Use Ag over Grep
+	set grepprg=ag\ --nogroup\ --nocolor
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+	" Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+	let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
-  let g:ctrlp_use_caching = 0
+	let g:ctrlp_use_caching = 0
 endif
 let g:ctrlp_working_path_mode = 0
 
+"FZF settings
 function! CtrlPCommand()
 	let c = 0
 	let wincount = winnr('$')
@@ -218,10 +252,10 @@ function! CtrlPCommand()
 		exec 'wincmd w'
 		let c = c + 1
 	endwhile
-	exec 'CtrlP'
+	exec 'FZF'
 endfunction
-let g:ctrlp_cmd = 'call CtrlPCommand()'
-let g:ctrlp_lazy_update = 1
+
+map <C-p> :call CtrlPCommand()<cr>
 
 "Fix for crontab: temp file must be edited in place
 autocmd filetype crontab setlocal nobackup nowritebackup

@@ -1,5 +1,6 @@
 source ~/.private_vars
 source ~/.git-completion.bash
+source ~/.iterm2_shell_integration.`basename $SHELL`
 
 # Env vars
 export HISTCONTROL=ignoredups # When going through command history, ignore the same command run multiple times in a row
@@ -13,6 +14,7 @@ export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH=$PATH:$HOME/golang/bin
 export PATH=$PATH:$PYTHONPATH
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
+export PATH="$PATH:$HOME/.cargo/bin"
 
 ## Misc
 export GOPATH=$HOME/golang
@@ -20,6 +22,7 @@ export GOROOT=/usr/local/opt/go/libexec
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages
 export NVM_DIR=~/.nvm
 export EDITOR=vim
+export TERM_PROGRAM=
 
 # Powerline
 . $PYTHONPATH/powerline/bindings/bash/powerline.sh
@@ -73,7 +76,12 @@ function gplom {
 function gpucb {
   if [ -z $1 ]
   then
-	  REMOTE="origin"
+	  if [ "" == `git remote | grep dmadeira` ] 
+	  then
+		  REMOTE="origin"
+	  else
+		  REMOTE="dmadeira"
+	  fi
   else 
 	  REMOTE=$1
   fi
@@ -81,8 +89,15 @@ function gpucb {
   git push $REMOTE $CURR_BRANCH
 }
 
+# Thanks Thomas Marshall!
+function gmpr {
+  repo=`git remote -v | grep -m 1 "(push)" | sed -e "s/.*github.medallia.com[:/]\(.*\)\.git.*/\1/"`
+  branch=`git name-rev --name-only HEAD`
+  echo "... creating pull request for branch \"$branch\" in \"$repo\""
+  open https://github.medallia.com/$repo/pull/new/$branch
+}
+
 function gfpr {
-  set -e
   git checkout master
   git fetch origin pull/$1/head:$2
   git checkout $2
@@ -107,6 +122,20 @@ function st {
 	stty sane
 }
 
+# TMUX configurations
+function tx_prj {
+	PROJECT_NAME=$(basename $1)
+	SESSION_NAME=$USER
+	tmux new-session -c $1 -s $SESSION_NAME  -n $PROJECT_NAME vim
+	tmux split-window -t $SESSION_NAME -v -p 40
+	tmux attach-session -t $SESSION_NAME
+}
+
+# FZF options
+export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
+
 source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
 [[ -r ~/.bashrc ]] && . ~/.bashrc
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
