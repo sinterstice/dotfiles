@@ -31,8 +31,8 @@ export XDG_CONFIG_HOME=~/.config
 # Aliases
 alias mci="mvn clean install"
 alias mcist="mvn -Dpmd.skip=true -Dmaven.test.skip.exec=true -DskipTests=true -Dcheckstyle.skip=true clean install"
+alias vi="vim"
 alias bim="vim"
-alias vibp="vim ~/.bash_profile && source ~/.bash_profile"
 
 # Git aliases
 alias gcm="git commit"
@@ -129,6 +129,34 @@ function tx_prj {
 	tmux new-session -c $1 -s $SESSION_NAME  -n $PROJECT_NAME vim
 	tmux split-window -t $SESSION_NAME -v -p 40
 	tmux attach-session -t $SESSION_NAME
+}
+
+function ctags_extra {
+	# ctags doesn't handle negative look behinds so instead this script
+	# strips false positives out of a tags file.
+
+	ctags -R --fields=+lS "$@"
+
+	FILE="tags"
+
+	while [[ $# > 1 ]]
+	do
+	key="$1"
+
+	case $key in
+		-f)
+		FILE="$2"
+		shift
+		;;
+	esac
+	shift
+	done
+
+	# Filter out false matches from class method regex
+	sed -i '' -E '/^(if|switch|function|module\.exports|it|describe)	.+language:js$/d' $FILE
+
+	# Filter out false matches from object definition regex
+	sed -i '' -E '/var[ 	]+[a-zA-Z0-9_$]+[ 	]+=[ 	]+require\(.+language:js$/d' $FILE
 }
 
 # FZF options

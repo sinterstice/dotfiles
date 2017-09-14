@@ -30,6 +30,7 @@ target/
 .nvmrc
 node_modules
 tmp
+.tern-project
 
 # IntelliJ
 .idea/

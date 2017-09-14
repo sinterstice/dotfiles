@@ -11,6 +11,7 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+" Misc
 Plugin 'bling/vim-airline'
 Plugin 'tpope/vim-fugitive'
 " Search
@@ -27,9 +28,10 @@ Plugin 'djmadeira/minibufexpl.vim'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'wellsjo/wells-colorscheme.vim'
 " Lang support
-Plugin 'vim-syntastic/syntastic'
+Plugin 'w0rp/ale'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'fatih/vim-go'
 " VimL functions
 Plugin 'LucHermitte/lh-vim-lib'
 Plugin 'vim-scripts/nextval'
@@ -37,9 +39,7 @@ Plugin 'vim-scripts/nextval'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-commentary'
-if v:version > 703
-	Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
-endif
+Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -50,15 +50,20 @@ filetype plugin indent on    " required" Statusline
 set showcmd
 set dictionary=/usr/share/dict/words
 syntax on
+set synmaxcol=200
 set relativenumber
 set number
 set mouse+=a
 set ttymouse=xterm2
 set backspace=indent,eol,start
+set autowrite
 
 " highlight columns longer than 120 characters
 highlight ColorColumn ctermbg=magenta guibg=magenta
 call matchadd('ColorColumn', '\%121v', 100)
+
+" enable JavaScript highlighting for .mjs files
+au BufRead,BufNewFile *.mjs set filetype=javascript
 
 " Fold options
 set foldmethod=syntax
@@ -87,7 +92,8 @@ map <leader>f :NERDTreeFind<cr>
 " rotate window
 map <leader>wr <C-W>r
 
-map <leader>lh c(...v) => { console.log(v); return <Esc>pa; }<Esc>
+map <leader>an :ALENext<cr>
+map <leader>ap :ALEPrevious<cr>
 
 function! WinMove(key)
 	let t:curwin = winnr()
@@ -118,9 +124,6 @@ map <leader>c              :MBEbd<cr>
 
 cnoreabbrev bc<cr> MBEbd<cr>
 
-" Generate ctags
-cnoreabbrev ctags !ctags -R --exclude=node_modules --fields=+l .
-
 " reload vim config
 map <leader>r :so ~/.vimrc<cr>
 
@@ -143,9 +146,9 @@ cnoreabbrev bda call CloseAllBuffers()
 " switch to last buffer
 map <leader>b :b#<cr>
 
-" switch to next buffer
-map <tab> :bn<cr>
-map <S-tab> :bp<cr>
+" switch to next buffer, skipping quickfix
+map <tab> :bn<cr>:if &buftype ==# 'quickfix'<Bar>bn<Bar>endif<cr>
+map <S-tab> :bp<cr>:if &buftype ==# 'quickfix'<Bar>bp<Bar>endif<cr>
 
 " Replace text without overwriting the most recent buffer
 vmap r "_dP
@@ -158,6 +161,7 @@ nmap <leader>O O<Esc>j
 nmap <Enter> i<Enter><Esc>
 
 " Use system clipboard
+set clipboard=unnamed
 map <leader>y "*y
 map <leader>p "*p
 
@@ -195,17 +199,15 @@ let g:miniBufExplMaxSize=3
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplSortBy='number'
 
-"Syntastic settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exec = StrTrim(system('npm-which eslint'))
+"ALE settings
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\}
+let g:ale_fix_on_save = 1
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⚠️'
+let g:ale_sign_column_always = 1 
+let g:ale_change_sign_column_color = 1
 
 "NERDTree settings
 let g:nerdtree_tabs_open_on_console_startup = 1
@@ -216,8 +218,27 @@ let g:airline_powerline_fonts = 1
 
 "YCM settings
 set completeopt-=preview
+let g:ycm_min_num_of_chars_for_completion = 3
 let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_collect_identifiers_from_tags_files = 1
+let g:ycm_min_num_identifier_candidate_chars = 5
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_seed_identifiers_with_syntax = 1
+let g:ycm_use_ultisnips_completer = 0
+let g:ycm_semantic_triggers =  {
+	\   'c' : ['->', '.'],
+	\   'objc' : ['->', '.', 're!\[[_a-zA-Z]+\w*\s', 're!^\s*[^\W\d]\w*\s',
+	\             're!\[.*\]\s'],
+	\   'ocaml' : ['.', '#'],
+	\   'cpp,objcpp' : ['->', '.', '::'],
+	\   'perl' : ['->'],
+	\   'php' : ['->', '::'],
+	\   'cs,java,typescript,d,python,perl6,scala,vb,elixir,go' : ['.'],
+	\   'javascript' : ['.', '{ '],
+	\   'ruby' : ['.', '::'],
+	\   'lua' : ['.', ':'],
+	\   'erlang' : [':'],
+	\ }
 
 "Ack.vim settings
 map <leader>a :ag
@@ -228,7 +249,7 @@ let g:ack_default_options = ''
 
 " Use ag
 if executable('ag')
-	let g:ackprg = 'ag --vimgrep -S'
+	let g:ackprg = 'ag --vimgrep'
 endif
 
 "ctrlp settings
