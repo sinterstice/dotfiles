@@ -1,51 +1,53 @@
-set nocompatible
-
 " Vundle options
-filetype off                  " required
+filetype off
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+call plug#begin()
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
 " Misc
-Plugin 'bling/vim-airline'
-Plugin 'tpope/vim-fugitive'
+Plug 'bling/vim-airline'
+Plug 'tpope/vim-fugitive'
 " Search
-Plugin 'vim-scripts/SearchComplete'
-Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'vim-scripts/SearchComplete'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " File browsing
-Plugin 'mileszs/ack.vim'
-Plugin 'tpope/vim-dispatch'
-Plugin 'jistr/vim-nerdtree-tabs'
-Plugin 'scrooloose/nerdtree'
-Plugin 'vim-scripts/a.vim' " Open header file for current file, vice versa
-Plugin 'djmadeira/minibufexpl.vim'
+Plug 'mileszs/ack.vim'
+Plug 'tpope/vim-dispatch'
+Plug 'jistr/vim-nerdtree-tabs'
+Plug 'scrooloose/nerdtree'
+Plug 'vim-scripts/a.vim' " Open header file for current file, vice versa
+Plug 'djmadeira/minibufexpl.vim'
 " Colors & fonts
-Plugin 'flazz/vim-colorschemes'
-Plugin 'wellsjo/wells-colorscheme.vim'
+Plug 'flazz/vim-colorschemes'
+Plug 'wellsjo/wells-colorscheme.vim'
 " Lang support
-Plugin 'w0rp/ale'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'fatih/vim-go'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+Plug 'w0rp/ale'
+Plug 'sheerun/vim-polyglot'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'fatih/vim-go'
+Plug 'moll/vim-node'
+Plug 'reasonml-editor/vim-reason-plus'
 " VimL functions
-Plugin 'LucHermitte/lh-vim-lib'
-Plugin 'vim-scripts/nextval'
+Plug 'LucHermitte/lh-vim-lib'
+Plug 'qwertologe/nextval.vim'
 " Enhancements for edit, insert etc
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-commentary'
-" Plugin 'Valloric/YouCompleteMe', { 'build' : { 'mac' : './install.sh --gocode-completer --clang-completer --tern-completer --system-libclang', } }
-Plugin 'Shougo/deoplete.nvim'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
+call plug#end()
+
 filetype plugin indent on    " required" Statusline
+
 " End Vundle options
+
+runtime macros/matchit.vim
 
 "General options
 set showcmd
@@ -55,20 +57,17 @@ set synmaxcol=200
 set relativenumber
 set number
 set mouse+=a
-set ttymouse=xterm2
+" set ttymouse=xterm2
 set backspace=indent,eol,start
+set termguicolors
 set autowrite
 
 " highlight columns longer than 120 characters
-highlight ColorColumn ctermbg=magenta guibg=magenta
+highlight ColorColumn guibg=Magenta
 call matchadd('ColorColumn', '\%121v', 100)
 
 " enable JavaScript highlighting for .mjs files
 au BufRead,BufNewFile *.mjs set filetype=javascript
-
-" Fold options
-set foldmethod=syntax
-autocmd Syntax * normal zR
 
 " File options
 "set wildignore=.DS_Store
@@ -83,6 +82,9 @@ set incsearch
 
 "Keybindings"
 let mapleader = ","
+
+" Insert a single character after cursor
+nnoremap <Space> a_<Esc>r
 
 " focus nerdtree
 map <leader>t :NERDTreeFocusToggle<CR>
@@ -126,7 +128,7 @@ map <leader>c              :MBEbd<cr>
 cnoreabbrev bc<cr> MBEbd<cr>
 
 " reload vim config
-map <leader>r :so ~/.vimrc<cr>
+map <leader>r :so ~/.config/nvim/init.vim<cr>
 
 " shortcut for turning spellcheck on/off
 cnoreabbrev spellon setlocal spell spelllang=en_us
@@ -157,6 +159,10 @@ vmap r "_dP
 " Insert a newline
 nmap <leader>o o<Esc>k
 nmap <leader>O O<Esc>j
+
+" Increment/decrement
+nmap <silent> = <Plug>nextvalInc
+nmap <silent> - <Plug>nextvalDec
 
 " Insert a newline at the current position
 nmap <Enter> i<Enter><Esc>
@@ -198,6 +204,14 @@ function! StrTrim(txt)
 	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
 endfunction
 
+"LanguageClient settings
+let g:LanguageClient_serverCommands = {
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ 'javascript.jsx': ['javascript-typescript-stdio'],
+	\ 'reason': ['ocaml-language-server', '--stdio'],
+    \ 'ocaml': ['ocaml-language-server', '--stdio']
+    \ }
+
 "MBE settings
 let g:miniBufExplMaxSize=3
 let g:miniBufExplUseSingleClick = 1
@@ -208,10 +222,10 @@ let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \}
 let g:ale_fix_on_save = 1
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
+" let g:ale_sign_error = '❌'
+" let g:ale_sign_warning = '⚠️'
 let g:ale_sign_column_always = 1 
-let g:ale_change_sign_column_color = 1
+let g:ale_set_highlights = 1
 
 "NERDTree settings
 let g:nerdtree_tabs_open_on_console_startup = 1
@@ -276,7 +290,7 @@ function! CtrlPCommand()
 	let c = 0
 	let wincount = winnr('$')
 	" Don't open it here if current buffer is not writable (e.g. NERDTree)
-	while !empty(getbufvar(+expand("<abuf>"), "&buftype")) && c < wincount
+	while !empty(getbufvar(+expand("<abuf>"), "&buftype")) && c <= wincount
 		exec 'wincmd w'
 		let c = c + 1
 	endwhile
@@ -296,11 +310,9 @@ filetype indent on
 set autoindent
 set smartindent
 set cindent
-set shiftwidth=4
-
-"tab settings"
-set noexpandtab
+set expandtab
 set tabstop=4
+set shiftwidth=4
 
 "Format options"
 set formatoptions=tcqn1

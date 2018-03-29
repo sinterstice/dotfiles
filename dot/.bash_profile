@@ -1,9 +1,15 @@
 source ~/.private_vars
 source ~/.git-completion.bash
-source ~/.iterm2_shell_integration.`basename $SHELL`
 
 # Env vars
 export HISTCONTROL=ignoredups # When going through command history, ignore the same command run multiple times in a row
+
+## Misc
+export GOPATH=$HOME/golang
+export GOROOT=/usr/local/opt/go/libexec
+export PYTHONPATH=/usr/local/lib/python3.6/site-packages
+export NVM_DIR=~/.nvm
+export EDITOR=vim
 
 ## Path mods
 export PATH="/usr/local/mysql/bin:$PATH"
@@ -15,14 +21,7 @@ export PATH=$PATH:$HOME/golang/bin
 export PATH=$PATH:$PYTHONPATH
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 export PATH="$PATH:$HOME/.cargo/bin"
-
-## Misc
-export GOPATH=$HOME/golang
-export GOROOT=/usr/local/opt/go/libexec
-export PYTHONPATH=/usr/local/lib/python2.7/site-packages
-export NVM_DIR=~/.nvm
-export EDITOR=vim
-export TERM_PROGRAM=
+export PATH="$PATH:$HOME/repos/multitasking/bin"
 
 # Powerline
 . $PYTHONPATH/powerline/bindings/bash/powerline.sh
@@ -30,9 +29,9 @@ export XDG_CONFIG_HOME=~/.config
 
 # Aliases
 alias mci="mvn clean install"
-alias mcist="mvn -Dpmd.skip=true -Dmaven.test.skip.exec=true -DskipTests=true -Dcheckstyle.skip=true clean install"
 alias vi="vim"
 alias bim="vim"
+alias nv="nvim"
 
 # Git aliases
 alias gcm="git commit"
@@ -61,46 +60,74 @@ alias gmr="git merge"
 __git_complete gmr _git_merge
 alias gdf="git diff"
 __git_complete gdf _git_diff
+alias gcp="git cherry-pick"
+__git_complete gcp _git_cherry-pick
+alias gcl="git clean"
+__git_complete gcl _git-clean
+
 
 function git_get_current_branch {
-    CURR_BRANCH=$(git symbolic-ref --short HEAD)
+	CURR_BRANCH=$(git symbolic-ref --short HEAD)
 }
 
 function gplom {
-  git_get_current_branch
-  git checkout master
-  git pull origin master
-  git checkout $CURR_BRANCH
+	git_get_current_branch
+	git checkout master
+	git pull origin master
+	git checkout $CURR_BRANCH
 }
 
 function gpucb {
-  if [ -z $1 ]
-  then
-	  if [ "" == `git remote | grep dmadeira` ] 
-	  then
-		  REMOTE="origin"
-	  else
-		  REMOTE="dmadeira"
-	  fi
-  else 
-	  REMOTE=$1
-  fi
-  git_get_current_branch
-  git push $REMOTE $CURR_BRANCH
+	if [ -z $1 ]
+	then
+		if [ "" == `git remote | grep dmadeira` ] 
+		then
+			REMOTE="origin"
+		else
+			REMOTE="dmadeira"
+		fi
+	else 
+		REMOTE=$1
+	fi
+	git_get_current_branch
+	git push $REMOTE $CURR_BRANCH
 }
 
 # Thanks Thomas Marshall!
 function gmpr {
-  repo=`git remote -v | grep -m 1 "(push)" | sed -e "s/.*github.medallia.com[:/]\(.*\)\.git.*/\1/"`
-  branch=`git name-rev --name-only HEAD`
-  echo "... creating pull request for branch \"$branch\" in \"$repo\""
-  open https://github.medallia.com/$repo/pull/new/$branch
+	  repo=`git remote -v | grep -m 1 "(push)" | sed -e "s/.*github.medallia.com[:/]\(.*\)\.git.*/\1/"`
+	  branch=`git name-rev --name-only HEAD`
+	  echo "... creating pull request for branch \"$branch\" in \"$repo\""
+	  open https://github.medallia.com/$repo/pull/new/$branch
 }
 
 function gfpr {
-  git checkout master
-  git fetch origin pull/$1/head:$2
-  git checkout $2
+	git checkout master
+	git fetch origin pull/$1/head:$2
+	git checkout $2
+}
+
+# Bulk delete git branches
+# Pass branches you want to KEEP as arguments, script deletes the rest
+# Will ask you for confirmation before deleting
+function gdbr {
+	local ALWAYS_IGNORE="master *"
+	local DELETE_BRANCHES=$(git branch | awk -v IGNORE_WORDS="$ALWAYS_IGNORE $*" '
+	BEGIN { split(IGNORE_WORDS, IGNORE, " ") }
+	{ FOUND=0; for(I in IGNORE) { if($1 == IGNORE[I]) { FOUND=1; break } } if(FOUND==0) print $1; }
+	')
+	if [[ -z "$DELETE_BRANCHES" ]]
+	then
+		echo "No branches to delete"
+		return
+	fi
+	read -p "Are you sure you want to delete these branches? (y/n) 
+	$DELETE_BRANCHES" -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		git branch -D $DELETE_BRANCHES
+	fi
 }
 
 # Job control aliases
@@ -108,8 +135,8 @@ alias kterm="kill -s SIGTERM"
 alias kquit="kill -s SIGQUIT"
 
 function mkcd {
-  mkdir -p $1
-  cd $1
+	mkdir -p $1
+	cd $1
 }
 
 function ptouch {
@@ -120,6 +147,10 @@ function ptouch {
 # Fix output issues
 function st {
 	stty sane
+}
+
+function cdrr {
+	cd ~/repos/reporting
 }
 
 # TMUX configurations
@@ -141,15 +172,15 @@ function ctags_extra {
 
 	while [[ $# > 1 ]]
 	do
-	key="$1"
+		key="$1"
 
-	case $key in
-		-f)
-		FILE="$2"
+		case $key in
+			-f)
+				FILE="$2"
+				shift
+				;;
+		esac
 		shift
-		;;
-	esac
-	shift
 	done
 
 	# Filter out false matches from class method regex
@@ -160,10 +191,12 @@ function ctags_extra {
 }
 
 # FZF options
+set rtp+=/usr/local/opt/fzf
 export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
 
 source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
 [[ -r ~/.bashrc ]] && . ~/.bashrc
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# Medallia stuff
+alias d1qa="d1 --baseUrl ec2-54-241-34-79.us-west-1.compute.amazonaws.com:8080"
