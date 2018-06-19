@@ -30,6 +30,7 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go'
 Plug 'moll/vim-node'
 Plug 'reasonml-editor/vim-reason-plus'
+Plug 'Chiel92/vim-autoformat'
 " VimL functions
 Plug 'LucHermitte/lh-vim-lib'
 Plug 'qwertologe/nextval.vim'
@@ -203,6 +204,9 @@ augroup END
 function! StrTrim(txt)
 	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
 endfunction
+
+"vim-surround settings
+let g:surround_99 = "/* \r */"
 
 "LanguageClient settings
 let g:LanguageClient_serverCommands = {

@@ -1,15 +1,87 @@
-source ~/.private_vars
-source ~/.git-completion.bash
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-# Env vars
-export HISTCONTROL=ignoredups # When going through command history, ignore the same command run multiple times in a row
+# Path to your oh-my-zsh installation.
+export ZSH="/Users/djmadeira/.oh-my-zsh"
+
+# Set name of the theme to load. Optionally, if you set this to "random"
+# it'll load a random theme each time that oh-my-zsh is loaded.
+# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+ZSH_THEME="amuse"
+
+# Set list of themes to load
+# Setting this variable when ZSH_THEME=random
+# cause zsh load theme from this variable instead of
+# looking in ~/.oh-my-zsh/themes/
+# An empty array have no effect
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion. Case
+# sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to change how often to auto-update (in days).
+# export UPDATE_ZSH_DAYS=13
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# HIST_STAMPS="mm/dd/yyyy"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(
+  git,
+  brew,
+  docker,
+  gradle,
+  npm,
+  osx,
+  vi-mode,
+  yarn
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+bindkey -v
+export KEYTIMEOUT=1
 
 ## Misc
 export GOPATH=$HOME/golang
 export GOROOT=/usr/local/opt/go/libexec
 export PYTHONPATH=/usr/local/lib/python3.6/site-packages
 export NVM_DIR=~/.nvm
-export EDITOR=vim
+export EDITOR=nvim
+export XDG_CONFIG_HOME=~/.config
 
 ## Path mods
 ## I hate everything
@@ -25,9 +97,10 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/repos/multitasking/bin"
 
-# Powerline
-. $PYTHONPATH/powerline/bindings/bash/powerline.sh
-export XDG_CONFIG_HOME=~/.config
+source ~/.private_vars
+source $(brew --prefix nvm)/nvm.sh
+source <(npm completion)
+. $PYTHONPATH/powerline/bindings/zsh/powerline.zsh
 
 # Aliases
 alias mci="mvn clean install"
@@ -38,35 +111,20 @@ alias bp="source ~/.bash_profile"
 
 # Git aliases
 alias gcm="git commit"
-__git_complete gcm _git_commit
 alias gad="git add"
-__git_complete gad _git_add
 alias gpu="git push"
-__git_complete gpu _git_push
 alias gpl="git pull"
-__git_complete gpl _git_pull
 alias gco="git checkout"
-__git_complete gco _git_checkout
 alias gst="git status"
-__git_complete gst _git_status
 alias gbr="git branch"
-__git_complete gbr _git_branch
 alias grm="git rm"
-__git_complete grm _git_rm
 alias grb="git rebase"
-__git_complete grb _git_rebase
 alias glg="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-__git_complete glg _git_log
 alias grs="git reset"
-__git_complete glg _git_log
 alias gmr="git merge"
-__git_complete gmr _git_merge
 alias gdf="git diff"
-__git_complete gdf _git_diff
 alias gcp="git cherry-pick"
-__git_complete gcp _git_cherry-pick
 alias gcl="git clean"
-__git_complete gcl _git-clean
 
 function git_get_current_branch {
 	CURR_BRANCH=$(git symbolic-ref --short HEAD)
@@ -155,50 +213,10 @@ function cdrr {
 	cd ~/repos/reporting
 }
 
-# TMUX configurations
-function tx_prj {
-	PROJECT_NAME=$(basename $1)
-	SESSION_NAME=$USER
-	tmux new-session -c $1 -s $SESSION_NAME  -n $PROJECT_NAME vim
-	tmux split-window -t $SESSION_NAME -v -p 40
-	tmux attach-session -t $SESSION_NAME
-}
-
-function ctags_extra {
-	# ctags doesn't handle negative look behinds so instead this script
-	# strips false positives out of a tags file.
-
-	ctags -R --fields=+lS "$@"
-
-	FILE="tags"
-
-	while [[ $# > 1 ]]
-	do
-		key="$1"
-
-		case $key in
-			-f)
-				FILE="$2"
-				shift
-				;;
-		esac
-		shift
-	done
-
-	# Filter out false matches from class method regex
-	sed -i '' -E '/^(if|switch|function|module\.exports|it|describe)	.+language:js$/d' $FILE
-
-	# Filter out false matches from object definition regex
-	sed -i '' -E '/var[ 	]+[a-zA-Z0-9_$]+[ 	]+=[ 	]+require\(.+language:js$/d' $FILE
-}
-
 # FZF options
 set rtp+=/usr/local/opt/fzf
 export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
 
-source $(brew --prefix nvm)/nvm.sh
-source <(npm completion)
-[[ -r ~/.bashrc ]] && . ~/.bashrc
 
 # Medallia stuff
 alias d1qa="d1 --baseUrl ec2-54-241-34-79.us-west-1.compute.amazonaws.com:8080"
@@ -210,3 +228,32 @@ alias yt="yarn test"
 alias ys="yarn start"
 alias een="EXPRESS_ENV_NAME"
 alias sf="--testPathIgnorePatterns='functional'"
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
+
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
+
+# ssh
+# export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+#
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
