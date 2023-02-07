@@ -22,17 +22,7 @@
 			"local_themes": {
 				"continuation": "continuation",
 				"select": "select"
-			},
-            "segments": {
-                "left": [
-                ],
-                "right": [
-                    {
-                        "type": "function",
-                        "function": "powerline.segments.common.vcs.branch"
-                    }
-                ]
-            }
+			}
 		},
 		"tmux": {
 			"colorscheme": "default",

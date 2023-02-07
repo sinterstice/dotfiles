@@ -1,0 +1,5 @@
+dot/.config/nvim/plugged
+dot/.config/mssqlcli/mssqlcli.log*
+dot/.config/stetic/library-cache/
+
+.DS_Store

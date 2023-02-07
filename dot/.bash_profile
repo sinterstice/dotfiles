@@ -12,25 +12,24 @@ export NVM_DIR=~/.nvm
 export EDITOR=vim
 
 ## Path mods
-## I hate everything
 export PATH="/usr/local/mysql/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
-export PATH="$PATH:/usr/local/jmeter/bin"
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH="$PATH:$HOME/golang/bin"
 export PATH="$PYTHONPATH:$PATH"
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 export PATH="$PATH:$HOME/.cargo/bin"
-export PATH="$PATH:$HOME/repos/multitasking/bin"
+
+# Nightshift
+export CQUI_HOME="$HOME/nightshift/share"
 
 # Powerline
 . $PYTHONPATH/powerline/bindings/bash/powerline.sh
 export XDG_CONFIG_HOME=~/.config
 
 # Aliases
-alias mci="mvn clean install"
 alias vi="vim"
 alias bim="vim"
 alias nv="nvim"
@@ -95,7 +94,7 @@ function gpucb {
 	git push $REMOTE $CURR_BRANCH
 }
 
-# Thanks Thomas Marshall!
+# Thanks Tommy Marshall!
 function gmpr {
 	  repo=`git remote -v | grep -m 1 "(push)" | sed -e "s/.*github.medallia.com[:/]\(.*\)\.git.*/\1/"`
 	  branch=`git name-rev --name-only HEAD`
@@ -151,10 +150,6 @@ function st {
 	stty sane
 }
 
-function cdrr {
-	cd ~/repos/reporting
-}
-
 # TMUX configurations
 function tx_prj {
 	PROJECT_NAME=$(basename $1)
@@ -162,34 +157,6 @@ function tx_prj {
 	tmux new-session -c $1 -s $SESSION_NAME  -n $PROJECT_NAME vim
 	tmux split-window -t $SESSION_NAME -v -p 40
 	tmux attach-session -t $SESSION_NAME
-}
-
-function ctags_extra {
-	# ctags doesn't handle negative look behinds so instead this script
-	# strips false positives out of a tags file.
-
-	ctags -R --fields=+lS "$@"
-
-	FILE="tags"
-
-	while [[ $# > 1 ]]
-	do
-		key="$1"
-
-		case $key in
-			-f)
-				FILE="$2"
-				shift
-				;;
-		esac
-		shift
-	done
-
-	# Filter out false matches from class method regex
-	sed -i '' -E '/^(if|switch|function|module\.exports|it|describe)	.+language:js$/d' $FILE
-
-	# Filter out false matches from object definition regex
-	sed -i '' -E '/var[ 	]+[a-zA-Z0-9_$]+[ 	]+=[ 	]+require\(.+language:js$/d' $FILE
 }
 
 # FZF options
@@ -200,13 +167,18 @@ source $(brew --prefix nvm)/nvm.sh
 source <(npm completion)
 [[ -r ~/.bashrc ]] && . ~/.bashrc
 
-# Medallia stuff
-alias d1qa="d1 --baseUrl ec2-54-241-34-79.us-west-1.compute.amazonaws.com:8080"
-alias sb="SKIP_REBUILD=1"
-alias sr="SKIP_TEST_RETRY=1"
-alias rf="REPLACE_FIXTURES=1"
-alias dh="DISABLE_HEADLESS=1"
-alias yt="yarn test"
-alias ys="yarn start"
-alias een="EXPRESS_ENV_NAME"
-alias sf="--testPathIgnorePatterns='functional'"
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/djmadeira/opt/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/djmadeira/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/djmadeira/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/djmadeira/opt/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
