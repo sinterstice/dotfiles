@@ -1,113 +1,50 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# The following lines were added by compinstall
 
-# Path to your oh-my-zsh installation.
-export ZSH="/Users/djmadeira/.oh-my-zsh"
+zstyle ':completion:*' completer _complete _ignored _correct _approximate
+zstyle :compinstall filename '/home/alice/.zshrc'
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="amuse"
-
-# Set list of themes to load
-# Setting this variable when ZSH_THEME=random
-# cause zsh load theme from this variable instead of
-# looking in ~/.oh-my-zsh/themes/
-# An empty array have no effect
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git,
-  brew,
-  docker,
-  gradle,
-  npm,
-  osx,
-  vi-mode,
-  yarn
-)
-
-source $ZSH/oh-my-zsh.sh
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=10000
+SAVEHIST=1000
+setopt autocd extendedglob notify
 
 # User configuration
-bindkey -v
+bindkey -e
 export KEYTIMEOUT=1
 
 ## Misc
-export GOPATH=$HOME/golang
-export GOROOT=/usr/local/opt/go/libexec
-export PYTHONPATH=/usr/local/lib/python3.6/site-packages
+export GOPATH=$HOME/go
+export GOROOT=/usr/lib/go
+export PYTHONPATH=/usr/lib/python3.10/site-packages
 export NVM_DIR=~/.nvm
 export EDITOR=nvim
 export XDG_CONFIG_HOME=~/.config
 
 ## Path mods
-## I hate everything
-export PATH="/usr/local/mysql/bin:$PATH"
-export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
-export PATH="$PATH:/usr/local/jmeter/bin"
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH="$PATH:$HOME/golang/bin"
 export PATH="$PYTHONPATH:$PATH"
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/repos/multitasking/bin"
+export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:/var/lib/flatpak/exports/bin"
 
-source ~/.private_vars
-source $(brew --prefix nvm)/nvm.sh
-source <(npm completion)
-. $PYTHONPATH/powerline/bindings/zsh/powerline.zsh
+export SYSTEMD_PAGER=less
+
+# source <(npm completion)
+#
+# . $PYTHONPATH/powerline/bindings/zsh/powerline.zsh
 
 # Aliases
-alias mci="mvn clean install"
 alias vi="vim"
 alias bim="vim"
 alias nv="nvim"
-alias bp="source ~/.bash_profile"
 
 # Git aliases
 alias gcm="git commit"
@@ -190,10 +127,6 @@ function gdbr {
 	fi
 }
 
-# Job control aliases
-alias kterm="kill -s SIGTERM"
-alias kquit="kill -s SIGQUIT"
-
 function mkcd {
 	mkdir -p $1
 	cd $1
@@ -213,35 +146,11 @@ function cdrr {
 	cd ~/repos/reporting
 }
 
+alias pacs="sudo pacman -Syu"
+alias yays="yay -Syu"
+
 # FZF options
-set rtp+=/usr/local/opt/fzf
-export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
-
-
-# Medallia stuff
-alias d1qa="d1 --baseUrl ec2-54-241-34-79.us-west-1.compute.amazonaws.com:8080"
-alias sb="SKIP_REBUILD=1"
-alias sr="SKIP_TEST_RETRY=1"
-alias rf="REPLACE_FIXTURES=1"
-alias dh="DISABLE_HEADLESS=1"
-alias yt="yarn test"
-alias ys="yarn start"
-alias een="EXPRESS_ENV_NAME"
-alias sf="--testPathIgnorePatterns='functional'"
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
+set rtp+=/usr/bin/fzf
 # export ARCHFLAGS="-arch x86_64"
 
 # ssh
@@ -256,4 +165,15 @@ alias sf="--testPathIgnorePatterns='functional'"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/alice/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/home/alice/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/alice/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/alice/Downloads/google-cloud-sdk/completion.zsh.inc'; fi

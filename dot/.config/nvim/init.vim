@@ -1,4 +1,4 @@
-" Vundle options
+" Vim-Plugged options
 filetype off
 
 call plug#begin()
@@ -18,6 +18,7 @@ Plug 'djmadeira/minibufexpl.vim'
 " Colors & fonts
 Plug 'flazz/vim-colorschemes'
 Plug 'wellsjo/wells-colorscheme.vim'
+Plug 'rose-pine/neovim'
 " Lang support
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -40,7 +41,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'roxma/nvim-yarp'
 Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 call plug#end()
 
@@ -169,10 +170,12 @@ nmap <silent> - <Plug>nextvalDec
 nmap <Enter> i<Enter><Esc>
 
 " Use system clipboard
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " search for visually selected text
 vnoremap // y/<C-R>"<CR>
+
+vnoremap y "+y
 
 "Aliases"
 " function to define aliases (from http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev)
@@ -232,7 +235,7 @@ let g:ale_sign_warning = '⚠️'
 let g:ale_set_highlights = 1
 
 "NERDTree settings
-let g:nerdtree_tabs_open_on_console_startup = 1
+let g:nerdtree_tabs_open_on_console_startup = 0
 let g:nerdtree_tabs_smart_startup_focus = 2
 
 "Airline settings
@@ -264,7 +267,7 @@ let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 " Deoplete settings
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete = 0
-let g:python3_host_prog = "/usr/local/opt/python/libexec/bin/python"
+let g:python3_host_prog = "/usr/bin/python3.11"
 
 "Ack.vim settings
 map <leader>a :ag<space>
@@ -321,7 +324,7 @@ set shiftwidth=4
 
 "Format options"
 set formatoptions=tcqn1
-colorscheme wellsokai
+colorscheme rose-pine
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufNewFile,BufReadPost *.pcss set filetype=scss
 let g:indentLine_color_term = 239
