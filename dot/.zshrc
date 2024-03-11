@@ -16,6 +16,8 @@ setopt autocd extendedglob notify
 bindkey -e
 export KEYTIMEOUT=1
 
+export QT_LOGGING_RULES="*.debug=true; qt.*.debug=false"
+
 ## Misc
 export GOPATH=$HOME/go
 export GOROOT=/usr/lib/go
@@ -23,6 +25,7 @@ export PYTHONPATH=/usr/lib/python3.10/site-packages
 export NVM_DIR=~/.nvm
 export EDITOR=nvim
 export XDG_CONFIG_HOME=~/.config
+export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
 
 ## Path mods
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
@@ -168,6 +171,8 @@ set rtp+=/usr/bin/fzf
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
+alias pacq="pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -177,3 +182,21 @@ if [ -f '/home/alice/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/home/a
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/alice/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/alice/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/alice/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/alice/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/alice/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/alice/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

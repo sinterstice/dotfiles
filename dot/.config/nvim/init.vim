@@ -19,12 +19,13 @@ Plug 'djmadeira/minibufexpl.vim'
 Plug 'flazz/vim-colorschemes'
 Plug 'wellsjo/wells-colorscheme.vim'
 Plug 'rose-pine/neovim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Lang support
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-Plug 'dense-analysis/ale'
+" Plug 'autozimu/LanguageClient-neovim', {
+"     \ 'branch': 'next',
+"     \ 'do': 'bash install.sh',
+"     \ }
+" Plug 'dense-analysis/ale'
 Plug 'sheerun/vim-polyglot'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go'
@@ -95,8 +96,76 @@ map <leader>f :NERDTreeFind<cr>
 " rotate window
 map <leader>wr <C-W>r
 
-nnoremap <C-n> :ALENext<cr>
-map <leader>d :ALEDetail<cr>
+" ============== coc stuff ===================
+
+" use <tab> to trigger completion and navigate to the next complete item
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ coc#pum#visible() ? coc#pum#insert() :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+
+inoremap <expr> <C-n> coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"
+inoremap <expr> <S-n> coc#pum#visible() ? coc#pum#prev(1) : "\<S-n>"
+
+" nnoremap <C-n> :ALENext<cr>
+" map <leader>d :ALEDetail<cr>
+
+nnoremap <C-n> <Plug>(coc-diagnostic-next)
+nnoremap <S-n> <Plug>(coc-diagnostic-prev)
+nmap <silent!> gd <Plug>(coc-definition)
+nmap <silent!> gy <Plug>(coc-type-definition)
+nmap <silent!> gi <Plug>(coc-implementation)
+nmap <silent!> gr <Plug>(coc-references)
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+nmap <leader>rn <Plug>(coc-rename)
+
+" xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>=  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s)
+  autocmd FileType typescript,json,rust setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Add `:Format` command to format current buffer
+command! -nargs=0 Format :call CocActionAsync('format')
+
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" ============== end coc stuff ===================
 
 function! WinMove(key)
 	let t:curwin = winnr()
@@ -130,7 +199,7 @@ cnoreabbrev bc<cr> MBEbd<cr>
 " reload vim config
 map <leader>r :so ~/.config/nvim/init.vim<cr>
 
-map <leader>g :ALEGoToDefinition<cr>
+" map <leader>g :ALEGoToDefinition<cr>
 
 " shortcut for turning spellcheck on/off
 cnoreabbrev spellon setlocal spell spelllang=en_us
@@ -212,27 +281,28 @@ let g:miniBufExplMaxSize=3
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplSortBy='number'
 
-"ALE settings
-" \   'typescript': ['eslint', 'tslint'],
-" \   'typescript.tsx': ['eslint', 'tslint --jsx']
-let g:ale_linters = {
-\   'javascript': ['eslint'],
-\   'javascriptreact': ['eslint'],
-\   'typescript': ['tslint'],
-\   'typescriptreact': ['tsserver']
-\}
-let g:ale_fixers = {
-\   'javascript': ['eslint'],
-\   'javascriptreact': ['eslint'],
-\   'typescript': [],
-\   'typescriptreact': []
-\}
-let g:ale_lint_delay = 500
-let g:ale_fix_on_save = 1
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⚠️'
-let g:ale_set_highlights = 1
+""ALE settings
+"" \   'typescript': ['eslint', 'tslint'],
+"" \   'typescript.tsx': ['eslint', 'tslint --jsx']
+"let g:ale_linters = {
+"\   'javascript': ['eslint'],
+"\   'javascriptreact': ['eslint'],
+"\   'typescript': ['tslint'],
+"\   'typescriptreact': ['tsserver'],
+"\}
+"let g:ale_fixers = {
+"\   'javascript': ['eslint'],
+"\   'javascriptreact': ['eslint'],
+"\   'typescript': [],
+"\   'typescriptreact': [],
+"\   'rust': ['rustfmt']
+"\}
+"let g:ale_lint_delay = 500
+"let g:ale_fix_on_save = 1
+"let g:ale_sign_column_always = 1
+"let g:ale_sign_error = '❌'
+"let g:ale_sign_warning = '⚠️'
+"let g:ale_set_highlights = 1
 
 "NERDTree settings
 let g:nerdtree_tabs_open_on_console_startup = 0
@@ -329,3 +399,7 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 autocmd BufNewFile,BufReadPost *.pcss set filetype=scss
 let g:indentLine_color_term = 239
 set guifont=Hack
+
+"Editor options"
+set updatetime=300
+set signcolumn=yes
