@@ -35,8 +35,11 @@ export PATH="$PYTHONPATH:$PATH"
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting 
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/repos/multitasking/bin"
+export PATH="$PATH:$HOME/repos/snd/build/release"
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:/var/lib/flatpak/exports/bin"
+export PATH="$PATH:/usr/lib/ruby/gems/3.0.0/bin"
+export PATH="$PATH:/home/alice/.local/share/gem/ruby/3.0.0/bin"
 
 export SYSTEMD_PAGER=less
 

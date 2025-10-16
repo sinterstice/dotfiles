@@ -110,13 +110,12 @@ inoremap <silent><expr> <Tab>
       \ coc#refresh()
 
 inoremap <expr> <C-n> coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"
-inoremap <expr> <S-n> coc#pum#visible() ? coc#pum#prev(1) : "\<S-n>"
+inoremap <expr> <C-S-n> coc#pum#visible() ? coc#pum#prev(1) : "\<S-n>"
 
 " nnoremap <C-n> :ALENext<cr>
 " map <leader>d :ALEDetail<cr>
 
 nnoremap <C-n> <Plug>(coc-diagnostic-next)
-nnoremap <S-n> <Plug>(coc-diagnostic-prev)
 nmap <silent!> gd <Plug>(coc-definition)
 nmap <silent!> gy <Plug>(coc-type-definition)
 nmap <silent!> gi <Plug>(coc-implementation)
