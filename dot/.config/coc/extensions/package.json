@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "coc-tsserver": ">=2.1.4",
+    "coc-eslint": ">=1.6.0",
+    "coc-json": ">=1.9.2"
+  },
+  "lastUpdate": 1722967389493
+}

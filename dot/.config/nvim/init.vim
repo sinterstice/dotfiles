@@ -118,7 +118,7 @@ inoremap <expr> <C-S-n> coc#pum#visible() ? coc#pum#prev(1) : "\<S-n>"
 nnoremap <C-n> <Plug>(coc-diagnostic-next)
 nmap <silent!> gd <Plug>(coc-definition)
 nmap <silent!> gy <Plug>(coc-type-definition)
-nmap <silent!> gi <Plug>(coc-implementation)
+nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent!> gr <Plug>(coc-references)
 
 function! ShowDocumentation()
@@ -136,12 +136,13 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 " xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>=  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
   " Setup formatexpr specified filetype(s)
   autocmd FileType typescript,json,rust setl formatexpr=CocAction('formatSelected')
+  autocmd FileType typescript,typescriptreact map <leader>qf :CocCommand tsserver.executeAutofix<Enter>
+  autocmd FileType javascript map <leader>qf :CocCommand eslint.executeAutofix<Enter>
   " Update signature help on jump placeholder
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
